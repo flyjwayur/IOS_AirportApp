@@ -25,17 +25,75 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
     @IBOutlet weak var pasbTime: UITextField?
     @IBOutlet weak var theTimer: UILabel!
     
+    let dateFormatter = NSDateFormatter()
     var currentDate : NSDate = NSDate()
     var realtime : NSDate = NSDate()
     var remainingTime : NSTimeInterval = NSTimeInterval()
- 
-//    
+    
+    //Mark: Timer
+    var startTime = NSTimeInterval()
+    var timer = NSTimer()
+    let userCalender = NSCalendar.currentCalendar()
+    
+    let requestedComponent: NSCalendarUnit = [
+        NSCalendarUnit.Month,
+        NSCalendarUnit.Day,
+        NSCalendarUnit.Hour,
+        NSCalendarUnit.Minute,
+        NSCalendarUnit.Second
+    ]
+    
+    //Mark: CountDown
+    @IBOutlet weak var countDownLabel: UILabel!
+    
+    
 //    func hoursFrom(currentDate : NSDate, realtime:NSDate) -> Int
 //    {
 //        return NSCalendar.currentCalendar().components(NSCalendarUnit.CalendarUnitHour, fromDate: realtime, toDate: currentDate, options: nil).hour
 //    }
     
     
+    //Mark : Count Down the remaining time
+    func updateTime(){
+        
+        var currentTime = NSDate.timeIntervalSinceReferenceDate()
+        //Find the difference between current time and start time.
+        var elapsedTime: NSTimeInterval = currentTime - startTime
+        
+        //calculate the minutes in elapsed times
+        let minutes = UInt8(elapsedTime / 60.0) //let minutes = UInt8(remainingTime / 60.0)s
+                                                //remainingTime -= (NSTimeInterval(minutes)*60)
+        elapsedTime -= (NSTimeInterval(minutes)*60)
+        //calculate the secondes in elapsed times
+        let seconds = UInt8(elapsedTime) //let seconds = UInt8(remainingTime)
+                                         //remainingTime -= NSTimeInterval(seconds)
+        elapsedTime -= NSTimeInterval(seconds)
+        
+        //find out fraction of milliseconds to be displayed.
+        let fraction = UInt8(elapsedTime*100) //  let fraction = UInt8(remainingTime*100)
+
+        //add the leading zero for miutes, seconds and millseconds and store them as string constants
+        let strMinutes = String(format: "%02d", minutes)
+        let strSeconds = String(format: "%02d", seconds)
+        let strFraction = String(format: "%02d", fraction)
+       //concatenate minuets, seconds and milliseconds as assign it to the UILabel
+            theTimer.text =  ("\(strMinutes):\(strSeconds):\(strFraction)")
+    }
+    
+    
+    @IBAction func Start(sender: UIButton) {
+        if !timer.valid{
+        let aSelector : Selector = "updateTime"
+        timer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: aSelector, userInfo: nil, repeats: true)
+        startTime = NSDate.timeIntervalSinceReferenceDate()
+        }
+    }
+    
+    
+    @IBAction func Stop(sender: UIButton) {
+        timer.invalidate()
+        //timer == nil
+    }
     
     
     @IBAction func saveBtn(sender: UIButton) {
@@ -60,6 +118,15 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         
         try! context.save()
         print(newPassanger)
+        
+        if !timer.valid{
+//            let aSelector : Selector = "printTime"
+//            timer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: aSelector, userInfo: nil, repeats: true)
+//            startTime = NSDate.timeIntervalSinceReferenceDate()
+            
+//        let countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(printTime), userInfo: nil, repeats: true)
+//        countDownTimer.fire()
+        }
     }
     
 
@@ -117,8 +184,7 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
     
     func datePickerValueChanged(sender:UIDatePicker) {
         
-        let dateFormatter = NSDateFormatter()
-        
+        //let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         
         dateFormatter.timeZone = NSTimeZone(name: "GMT+03:00")
@@ -130,7 +196,7 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         
         print( "sender dateString,\(dateString)")
         print( "sender date,\(sender.date)")
-        
+      
         realtime = sender.date
         remainingTime = realtime.timeIntervalSinceDate(currentDate)
         print("remainingTime,\(remainingTime)")
@@ -140,6 +206,37 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         print("Hours:\(hours) Minute: \(minutes)")
         
     }
+    
+    // MARK: count down functions
+//    func printTime(){
+//        dateFormatter.dateFormat = "HH:mm:ss"
+//        remainingTime = realtime.timeIntervalSinceDate(currentDate)
+//        print("remainingTime,\(remainingTime)")
+//        let hours = floor(remainingTime/3600)
+//        let minutes = floor(remainingTime/60-hours*60)
+//        let seconds = round(remainingTime - hours*3600 - minutes*60)
+//        print("Hours:\(hours) Minute: \(minutes) Second: \(seconds)")
+//        
+//        //add the leading zero for hours, minutes and seconds and store them as string constants
+//        let strHour = String(format: "%02d", hours)
+//        let strMin = String(format: "%02d", minutes)
+//        let strSec = String(format: "%02d", seconds)
+//        //concatenate minuets, seconds and milliseconds as assign it to the UILabel
+//        countDownLabel.text =  ("\(strHour):\(strMin):\(strSec)")
+//    
+//    }
+    
+    func printTime(){
+        dateFormatter.dateFormat = "MM/dd/yy hh:mm:ss a"
+        let startingTime = NSDate()
+        let endingTime = realtime
+        
+        let timeDifference = userCalender.components(requestedComponent, fromDate: startingTime, toDate: endingTime, options:[])
+        
+        countDownLabel.text = "\(timeDifference.hour): \(timeDifference.minute):\(timeDifference.second)"
+    
+    }
+    
     
     // MARK: Helper functions
     
@@ -157,7 +254,13 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         //Mark: Data delegate
         pasbTime?.delegate = self
         
+        let countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(printTime), userInfo: nil, repeats: true)
+        countDownTimer.fire()
+        print("countDownTimer,\(countDownTimer)")
+        
 //        var timer = NSTimer.scheduledTimerWithTimeInterval(0.4, target:Selector("update"), selector: Selector, userInfo: nil, repeats:true)
+        
+        
         
         //Mark : Location configuration
         ESTConfig.setupAppID("airportapp4-0ty", andAppToken: "3e4dd8d8127a4d2a2b5a800036333218")
