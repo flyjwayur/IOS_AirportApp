@@ -187,11 +187,11 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         //let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         
-        dateFormatter.timeZone = NSTimeZone(name: "GMT+03:00")
+        //dateFormatter.timeZone = NSTimeZone(name: "GMT+03:00")
         
         dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
         
-     //   pasbTime!.text = dateFormatter.stringFromDate(sender.date)
+        pasbTime!.text = dateFormatter.stringFromDate(sender.date)
         let dateString = dateFormatter.stringFromDate(sender.date)
         
         print( "sender dateString,\(dateString)")
@@ -227,7 +227,7 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
 //    }
     
     func printTime(){
-        dateFormatter.dateFormat = "MM/dd/yy hh:mm:ss a"
+        //dateFormatter.dateFormat = "MM/dd/yy hh:mm:ss a"
         let startingTime = NSDate()
         let endingTime = realtime
         
