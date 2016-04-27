@@ -119,6 +119,11 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         try! context.save()
         print(newPassanger)
         
+        let countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(printTime), userInfo: nil, repeats: true)
+                countDownTimer.fire()
+            print("countDownTimer,\(countDownTimer)")
+
+        
         if !timer.valid{
 //            let aSelector : Selector = "printTime"
 //            timer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: aSelector, userInfo: nil, repeats: true)
@@ -171,6 +176,8 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         
         let datePickerView:UIDatePicker = UIDatePicker()
         
+        //Mark : display only times (not Month and day)
+        datePickerView.datePickerMode = UIDatePickerMode.Time
         datePickerView.timeZone = NSTimeZone.localTimeZone()
         
         sender.inputView = datePickerView
@@ -188,7 +195,6 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         dateFormatter.dateFormat = "HH:mm:ss"
         
         //dateFormatter.timeZone = NSTimeZone(name: "GMT+03:00")
-        
         dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
         
         pasbTime!.text = dateFormatter.stringFromDate(sender.date)
@@ -254,9 +260,9 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         //Mark: Data delegate
         pasbTime?.delegate = self
         
-        let countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(printTime), userInfo: nil, repeats: true)
-        countDownTimer.fire()
-        print("countDownTimer,\(countDownTimer)")
+//        let countDownTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(printTime), userInfo: nil, repeats: true)
+//        countDownTimer.fire()
+//        print("countDownTimer,\(countDownTimer)")
         
 //        var timer = NSTimer.scheduledTimerWithTimeInterval(0.4, target:Selector("update"), selector: Selector, userInfo: nil, repeats:true)
         
@@ -293,11 +299,11 @@ class ViewController: UIViewController, UITextFieldDelegate,EILIndoorLocationMan
         }
     }
     
-    func update() {
-        if(remainingTime > 0) {
-            theTimer.text = String(remainingTime--)
-        }
-    }
+//    func update() {
+//        if(remainingTime > 0) {
+//            theTimer.text = String(remainingTime--)
+//        }
+//    }
     
 //    func timer(){
 //        var seconds: NSTimeInterval = NSTimeInterval()
